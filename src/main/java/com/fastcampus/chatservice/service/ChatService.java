@@ -3,8 +3,10 @@ package com.fastcampus.chatservice.service;
 import com.fastcampus.chatservice.entities.Chatroom;
 import com.fastcampus.chatservice.entities.Member;
 import com.fastcampus.chatservice.entities.MemberChatroomMapping;
+import com.fastcampus.chatservice.entities.Message;
 import com.fastcampus.chatservice.repository.ChatroomRepository;
 import com.fastcampus.chatservice.repository.MemberChatroomMappingRepository;
+import com.fastcampus.chatservice.repository.MessageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ public class ChatService {
 
     private final ChatroomRepository chatroomRepository;
     private final MemberChatroomMappingRepository memberChatroomMappingRepository;
+    private final MessageRepository messageRepository;
 
     public Chatroom createChatroom(Member member, String title) {
         Chatroom chatroom = Chatroom.builder()
@@ -70,5 +73,22 @@ public class ChatService {
         return memberChatroomMappingList.stream()
                 .map(MemberChatroomMapping::getChatroom)
                 .toList();
+    }
+
+    public Message saveMessage(Member member, Long chatroomId, String text) {
+
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).get();
+
+        Message message = Message.builder()
+                .text(text)
+                .member(member)
+                .chatroom(chatroom)
+                .build();
+
+        return messageRepository.save(message);
+    }
+
+    public List<Message> getMessageList(Long chatroomId) {
+        return messageRepository.findByChatroomId(chatroomId);
     }
 }

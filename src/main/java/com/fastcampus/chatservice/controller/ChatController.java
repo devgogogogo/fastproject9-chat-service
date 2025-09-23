@@ -1,7 +1,9 @@
 package com.fastcampus.chatservice.controller;
 
+import com.fastcampus.chatservice.dto.ChatMessage;
 import com.fastcampus.chatservice.dto.ChatroomDto;
 import com.fastcampus.chatservice.entities.Chatroom;
+import com.fastcampus.chatservice.entities.Message;
 import com.fastcampus.chatservice.service.ChatService;
 import com.fastcampus.chatservice.vos.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,14 @@ public class ChatController {
 
         return chatroomList.stream()
                 .map(ChatroomDto::from)
+                .toList();
+    }
+
+    @GetMapping("/{chatroomId}/messages")
+    public List<ChatMessage> getMessagesList(@PathVariable Long chatroomId) {
+        List<Message> messageList = chatService.getMessageList(chatroomId);
+       return messageList.stream()
+                .map(message -> new ChatMessage(message.getMember().getNickname(), message.getText()))
                 .toList();
     }
 }
